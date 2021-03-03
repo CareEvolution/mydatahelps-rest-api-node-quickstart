@@ -21,8 +21,7 @@ This is a command-line app in Node.js. To run the app:
 2. Clone this repository.
 3. Copy the file `dotenv.sample` and name the new copy `.env`.
 4. Edit the `.env` file and fill in your project ID, service account name, and private key. See **Prerequisites** above for more information. Be sure to include the begin/end tags “--BEGIN RSA PRIVATE KEY--“ and “--END RSA PRIVATE KEY--" in your private key.
-5. Open a Powershell window in the application directory.
-6. Install the necessary npm libraries: `npm install`.
+5. From the application directory, install the necessary npm libraries: `npm install`.
 6. Run the script: `node quickstart.js`.
 
 If successful, the app will print out your token and number of participants in the console, like so:
