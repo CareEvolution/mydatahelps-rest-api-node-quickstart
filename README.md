@@ -17,7 +17,7 @@ For help finding this information, see the [RKStudio Developer Docs](https://dev
 
 This is a command-line app in Node.js. To run the app:
 
-1. Install NodeJS and the Node Package Manager (npm). One way to do this is using the Chocolatey software manager. Just install Chocolatey and execute this command in an administrator Powershell window: `choco install -y nodejs`.
+1. Install NodeJS and the Node Package Manager (npm).
 2. Clone this repository.
 3. Copy the file `dotenv.sample` and name the new copy `.env`.
 4. Edit the `.env` file and fill in your project ID, service account name, and private key. See **Prerequisites** above for more information. Be sure to include the begin/end tags “--BEGIN RSA PRIVATE KEY--“ and “--END RSA PRIVATE KEY--" in your private key.
