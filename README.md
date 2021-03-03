@@ -1,5 +1,5 @@
 
-# RKStudio REST API Quickstart Server
+# RKStudio REST API Node Quickstart
 
 This app is a demonstration of how to access the [RKStudio REST API](https://developer.rkstudio.careevolution.com/api/) using [Node.js](https://nodejs.org/en/). It gives an example of obtaining an access token and making a simple query to the API. You can use this app for reference, or modify it to test out your own API requests in a development environment.
 
