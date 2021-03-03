@@ -20,11 +20,11 @@ async function getFromApi(accessToken, resourceUrl, queryParams = {}) {
     baseURL: baseApiUri,
     headers: {
       "Authorization": `Bearer ${accessToken}`,
-      "Accept": "application/json", 
+      "Accept": "application/json",
       "Content-Type": "application/json; charset=utf-8"
     }
   });
-  
+
   await api.get(resourceUrl, { params: queryParams })
   .then(function (apiResponse) {
     if (apiResponse.status != '200') {
@@ -32,7 +32,8 @@ async function getFromApi(accessToken, resourceUrl, queryParams = {}) {
     }
     else {
       data = apiResponse.data;
-    }})
+    }
+  })
   .catch(function (error) {
     logResponse(error);
   });
@@ -40,49 +41,49 @@ async function getFromApi(accessToken, resourceUrl, queryParams = {}) {
 }
 
 async function getAccessToken() {
-    const audienceString = `${baseApiUri}/identityserver/connect/token`;
-    
-    const assertion = {
-        "iss": rksServiceAccount,
-        "sub": rksServiceAccount,
-        "aud": audienceString,
-        "exp": Math.floor(new Date().getTime() / 1000) + 200,
-        "jti": uuidv4()
-    };
+  const audienceString = `${baseApiUri}/identityserver/connect/token`;
 
-    var signedAssertion;
-    try {
-        signedAssertion = jwt.sign(assertion, privateKey, { algorithm: 'RS256' });
-    }
-    catch(err) {
-      console.log(`Error signing JWT. Check your private key. Error: ${err}`);
-      return null;
-    }
-    
-    const payload = {
-        scope: "api",
-        grant_type: "client_credentials",
-        client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-        client_assertion: signedAssertion
-    };
+  const assertion = {
+    "iss": rksServiceAccount,
+    "sub": rksServiceAccount,
+    "aud": audienceString,
+    "exp": Math.floor(new Date().getTime() / 1000) + 200,
+    "jti": uuidv4()
+  };
 
-    const tokenResponse = await makeAccessTokenRequest(payload); 
-    if (!tokenResponse || !tokenResponse.access_token) {
-        return null;
-    }
-    return tokenResponse.access_token;
+  var signedAssertion;
+  try {
+    signedAssertion = jwt.sign(assertion, privateKey, { algorithm: 'RS256' });
+  }
+  catch(err) {
+    console.log(`Error signing JWT. Check your private key. Error: ${err}`);
+    return null;
+  }
+
+  const payload = {
+    scope: "api",
+    grant_type: "client_credentials",
+    client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+    client_assertion: signedAssertion
+  };
+
+  const tokenResponse = await makeAccessTokenRequest(payload);
+  if (!tokenResponse || !tokenResponse.access_token) {
+    return null;
+  }
+  return tokenResponse.access_token;
 }
 
 
 async function makeAccessTokenRequest(payload) {
   return axios.post(`${baseApiUri}/identityserver/connect/token`, querystring.stringify(payload))
   .then(function (response) {
-      return response.data;
-    })
-    .catch(function (error) {
-      console.log(error);
-      return null;
-    });
+    return response.data;
+  })
+  .catch(function (error) {
+    console.log(error);
+    return null;
+  });
 }
 
 function logResponse(response) {
@@ -96,17 +97,17 @@ getAccessToken().then( token => {
     
     const participantResourceUrl = `/api/v1/administration/projects/` + rksProjectId + '/participants';
     getFromApi(token, participantResourceUrl)
-      .then(data => {
-        if (data) {
-          // Uncomment this to print out the full response to the console.
-          // logResponse(data);
-          console.log(`\nTotal Participants: ${data.totalParticipants}`);
-        } else {
-          console.log("Error when accessing the API.");
-        }
-      });
-    }
-    else {
-      console.log("Error obtaining access token.");
-    }
+    .then(data => {
+      if (data) {
+        // Uncomment this to print out the full response to the console.
+        // logResponse(data);
+        console.log(`\nTotal Participants: ${data.totalParticipants}`);
+      } else {
+        console.log("Error when accessing the API.");
+      }
+    });
+  }
+  else {
+    console.log("Error obtaining access token.");
+  }
 });
