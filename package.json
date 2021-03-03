@@ -5,6 +5,7 @@
     "jsonwebtoken": "^8.5.1",
     "request": "^2.88.2",
     "dotenv": "^8.2.x",
-    "axios": "0.21.x"
+    "axios": "0.21.x",
+    "uuid": "^8.3.2"
   }
 }

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const util = require('util');
 const querystring = require('querystring');
+const { v4: uuidv4 } = require('uuid');
 
 // **NOTE!** In a real production app you would want these to be sourced from real environment variables. The .env file is just
 // a convenience for development.
@@ -46,7 +47,7 @@ async function getAccessToken() {
         "sub": rksServiceAccount,
         "aud": audienceString,
         "exp": Math.floor(new Date().getTime() / 1000) + 200,
-        "jti": "random-non-reusable-jwt-id-123"
+        "jti": uuidv4()
     };
 
     var signedAssertion;
