@@ -12,7 +12,7 @@ const rksProjectId = process.env.RKS_PROJECT_ID;
 const rksServiceAccount = process.env.RKS_SERVICE_ACCOUNT;
 const privateKey = process.env.RKS_PRIVATE_KEY;
 
-const baseApiUri = 'https://rkstudio.careevolution.com/inv';
+const baseApiUri = 'https://designer.mydatahelps.org';
 
 async function getFromApi(accessToken, resourceUrl, queryParams = {}) {
   var data = null;
@@ -94,13 +94,13 @@ getAccessToken().then( token => {
   if (token) {
     console.log('Obtained access token:');
     console.log(token);
-    
+
     const participantResourceUrl = `/api/v1/administration/projects/` + rksProjectId + '/participants';
-    getFromApi(token, participantResourceUrl)
+    getFromApi(token, participantResourceUrl, { 'query': 'smith' }  )
     .then(data => {
       if (data) {
         // Uncomment this to print out the full response to the console.
-        // logResponse(data);
+        logResponse(data);
         console.log(`\nTotal Participants: ${data.totalParticipants}`);
       } else {
         console.log("Error when accessing the API.");
