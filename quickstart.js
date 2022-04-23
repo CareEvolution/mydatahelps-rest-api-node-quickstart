@@ -96,11 +96,11 @@ getAccessToken().then( token => {
     console.log(token);
 
     const participantResourceUrl = `/api/v1/administration/projects/` + rksProjectId + '/participants';
-    getFromApi(token, participantResourceUrl, { 'query': 'smith' }  )
+    getFromApi(token, participantResourceUrl)
     .then(data => {
       if (data) {
         // Uncomment this to print out the full response to the console.
-        logResponse(data);
+        // logResponse(data);
         console.log(`\nTotal Participants: ${data.totalParticipants}`);
       } else {
         console.log("Error when accessing the API.");
