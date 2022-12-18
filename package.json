@@ -1,11 +1,10 @@
 {
-  "name": "rkstudio-api-test",
+  "name": "mydatahelps-rest-api-node",
   "version": "1.0.0",
   "dependencies": {
     "jsonwebtoken": "^8.5.1",
-    "request": "^2.88.2",
     "dotenv": "^8.2.x",
-    "axios": "0.21.x",
+    "axios": "1.2.x",
     "uuid": "^8.3.2"
   }
 }
