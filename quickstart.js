@@ -105,20 +105,23 @@ async function quickstart() {
 
   // Get a specific participant by identifier. We disable 'raiseError' here
   // so we can handle the 404 case ourselves.
-  const participantIdentifier = "PT-123";
-  url = `/api/v1/administration/projects/${rksProjectId}/participants/${participantIdentifier}`;
-  response = await getFromApi(serviceAccessToken, url, {}, false );
-  if (response.status === 404) {
-    console.log("\nParticipant not found.");
-  } else {
-    const participant = response.data;
-    console.log(`\nParticipant Found. ID: ${participant.id}`);
+  const participantIdentifier = "YOUR_PARTICIPANT_IDENTIFIER";
+  
+  if (participantIdentifier != "YOUR_PARTICIPANT_IDENTIFIER") {
+    url = `/api/v1/administration/projects/${rksProjectId}/participants/${participantIdentifier}`;
+    response = await getFromApi(serviceAccessToken, url, {}, false );
+    if (response.status === 404) {
+      console.log("\nParticipant not found.");
+    } else {
+      const participant = response.data;
+      console.log(`\nParticipant Found. ID: ${participant.id}`);
 
-    // NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
-    // Most API use cases do NOT require a participant token.
-    const scopes = "api user/*.read"
-    const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
-    console.log(`\nParticipant access token obtained: ${participantAccessToken}`);
+      // NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
+      // Most API use cases do NOT require a participant token.
+      const scopes = "api user/*.read"
+      const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
+      console.log(`\nObtained participant access token for ${participant.id}: ${participantAccessToken}`);
+    }
   }
 }
 
