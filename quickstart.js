@@ -12,41 +12,15 @@ const rksProjectId = process.env.RKS_PROJECT_ID;
 const rksServiceAccount = process.env.RKS_SERVICE_ACCOUNT;
 const privateKey = process.env.RKS_PRIVATE_KEY;
 
-const baseApiUri = 'https://designer.mydatahelps.org';
+const baseUrl = 'https://designer.mydatahelps.org';
+const tokenUrl = `${baseUrl}/identityserver/connect/token`;
 
-async function getFromApi(accessToken, resourceUrl, queryParams = {}) {
-  var data = null;
-  let api = axios.create({
-    baseURL: baseApiUri,
-    headers: {
-      "Authorization": `Bearer ${accessToken}`,
-      "Accept": "application/json",
-      "Content-Type": "application/json; charset=utf-8"
-    }
-  });
-
-  await api.get(resourceUrl, { params: queryParams })
-  .then(function (apiResponse) {
-    if (apiResponse.status != '200') {
-      logResponse(apiResponse);
-    }
-    else {
-      data = apiResponse.data;
-    }
-  })
-  .catch(function (error) {
-    logResponse(error);
-  });
-  return data;
-}
-
-async function getAccessToken() {
-  const audienceString = `${baseApiUri}/identityserver/connect/token`;
+async function getServiceAccessToken() {
 
   const assertion = {
     "iss": rksServiceAccount,
     "sub": rksServiceAccount,
-    "aud": audienceString,
+    "aud": tokenUrl,
     "exp": Math.floor(new Date().getTime() / 1000) + 200,
     "jti": uuidv4()
   };
@@ -66,48 +40,87 @@ async function getAccessToken() {
     client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
     client_assertion: signedAssertion
   };
-
-  const tokenResponse = await makeAccessTokenRequest(payload);
-  if (!tokenResponse || !tokenResponse.access_token) {
-    return null;
-  }
-  return tokenResponse.access_token;
+  
+  const response = await axios.post(tokenUrl, querystring.stringify(payload));
+  const data = response.data;
+  return data.access_token;
 }
 
 
-async function makeAccessTokenRequest(payload) {
-  return axios.post(`${baseApiUri}/identityserver/connect/token`, querystring.stringify(payload))
-  .then(function (response) {
-    return response.data;
-  })
-  .catch(function (error) {
-    console.log(error);
-    return null;
+async function getFromApi(serviceAccessToken, resourceUrl, queryParams = {}, raiseError = true) {
+  let api = axios.create({
+    baseURL: baseUrl,
+    headers: {
+      "Authorization": `Bearer ${serviceAccessToken}`,
+      "Accept": "application/json",
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    validateStatus: function (status) {
+      return raiseError ? status === 200 : true;
+    }
   });
+  
+  const url = `${baseUrl}/${resourceUrl}`
+  const response = await api.get(url, { params: queryParams });
+  return response;
 }
 
+// Get a participant access token for the specified participant
+// Used for MyDataHelps Embeddables ONLY
+async function getParticipantAccessToken(serviceAccessToken, participantID, scopes) {
+
+  const payload = {
+      "scope": scopes,
+      "grant_type": "delegated_participant",
+      "participant_id": participantID,
+      "client_id": "MyDataHelps.DelegatedParticipant",
+      "client_secret": "secret",
+      "token": serviceAccessToken,
+  }
+
+  const response = await axios.post(tokenUrl, querystring.stringify(payload));
+  const data = response.data;
+  return data.access_token;
+}
+
+// Use this utility if you ever need to print a response for debugging
 function logResponse(response) {
   console.log(util.inspect(response, { colors: true, depth: 3 }));
 }
 
-getAccessToken().then( token => {
-  if (token) {
-    console.log('Obtained access token:');
-    console.log(token);
+async function quickstart() {
+  var url;
+  var response;
+  
+  // Get a service access token, needed for all API calls.
+  const serviceAccessToken = await getServiceAccessToken();
+  console.log('Obtained service access token:');
+  console.log(serviceAccessToken);
 
-    const participantResourceUrl = `/api/v1/administration/projects/` + rksProjectId + '/participants';
-    getFromApi(token, participantResourceUrl)
-    .then(data => {
-      if (data) {
-        // Uncomment this to print out the full response to the console.
-        // logResponse(data);
-        console.log(`\nTotal Participants: ${data.totalParticipants}`);
-      } else {
-        console.log("Error when accessing the API.");
-      }
-    });
+  // Get all participants
+  url = `/api/v1/administration/projects/${rksProjectId}/participants`;
+  response = await getFromApi(serviceAccessToken, url);
+  const participants = response.data;
+  console.log(`\nTotal Participants: ${participants.totalParticipants}`);
+
+  // Get a specific participant by identifier. We disable 'raiseError' here
+  // so we can handle the 404 case ourselves.
+  const participantIdentifier = "PT-123";
+  url = `/api/v1/administration/projects/${rksProjectId}/participants/${participantIdentifier}`;
+  response = await getFromApi(serviceAccessToken, url, {}, false );
+  if (response.status === 404) {
+    console.log("\nParticipant not found.");
+  } else {
+    const participant = response.data;
+    console.log(`\nParticipant Found. ID: ${participant.id}`);
+
+    // NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
+    // Most API use cases do NOT require a participant token.
+    const scopes = "api user/*.read"
+    const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
+    console.log(`\nParticipant access token obtained: ${participantAccessToken}`);
   }
-  else {
-    console.log("Error obtaining access token.");
-  }
-});
+}
+
+
+quickstart();
