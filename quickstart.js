@@ -105,7 +105,7 @@ async function quickstart() {
 
   // Get a specific participant by identifier. We disable 'raiseError' here
   // so we can handle the 404 case ourselves.
-  const participantIdentifier = "YOUR_PARTICIPANT_IDENTIFIER";
+  const participantIdentifier = "YOUR_PARTICIPANT_IDENTIFIER"
   
   if (participantIdentifier != "YOUR_PARTICIPANT_IDENTIFIER") {
     url = `/api/v1/administration/projects/${rksProjectId}/participants/${participantIdentifier}`;
@@ -118,7 +118,8 @@ async function quickstart() {
 
       // NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
       // Most API use cases do NOT require a participant token.
-      const scopes = "api user/*.read"
+      // Be sure to request the correct scope(s) for your needs.
+      const scopes = "Participant:read SurveyAnswers:read"
       const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
       console.log(`\nObtained participant access token for ${participant.id}: ${participantAccessToken}`);
     }
