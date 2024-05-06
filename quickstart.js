@@ -119,7 +119,7 @@ async function quickstart() {
       // NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
       // Most API use cases do NOT require a participant token.
       // Be sure to:
-      // 1. Use the internal ID field (from participant.id above) and NOT participant_identifier
+      // 1. Use the internal ID field (from participant.id above) and NOT participantIdentifier
       // 2. Request the correct scope(s) for your needs.
       const scopes = "Participant:read SurveyAnswers:read"
       const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
