@@ -2,9 +2,8 @@
   "name": "mydatahelps-rest-api-node",
   "version": "1.0.0",
   "dependencies": {
-    "jsonwebtoken": "^9.0.0",
-    "dotenv": "^8.2.x",
-    "axios": "1.6.x",
+    "dotenv": "^8.6.0",
+    "jsonwebtoken": "^9.0.2",
     "uuid": "^8.3.2"
   }
 }
