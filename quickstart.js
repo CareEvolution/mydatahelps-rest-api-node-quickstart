@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const jwt = require('jsonwebtoken');
-const axios = require('axios');
 const util = require('util');
 const querystring = require('querystring');
 const { v4: uuidv4 } = require('uuid');
@@ -41,28 +40,36 @@ async function getServiceAccessToken() {
     client_assertion: signedAssertion
   };
   
-  const response = await axios.post(tokenUrl, querystring.stringify(payload));
-  const data = response.data;
+  const response = await fetch(tokenUrl, { method: "POST", headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: querystring.stringify(payload) });
+
+  if (!response.ok) {
+      const error = `Get service access token failed. ${response.status} - ${await response.text()}`;
+      throw new Error(error);
+  }
+
+  const data = await response.json();
   return data.access_token;
 }
 
 
 async function getFromApi(serviceAccessToken, resourceUrl, queryParams = {}, raiseError = true) {
-  let api = axios.create({
-    baseURL: baseUrl,
-    headers: {
-      "Authorization": `Bearer ${serviceAccessToken}`,
-      "Accept": "application/json",
-      "Content-Type": "application/json; charset=utf-8"
-    },
-    validateStatus: function (status) {
-      return raiseError ? status === 200 : true;
-    }
-  });
-  
-  const url = `${baseUrl}/${resourceUrl}`
-  const response = await api.get(url, { params: queryParams });
-  return response;
+
+  const url = `${baseUrl}${resourceUrl}`
+  const response = await fetch(url, {
+      headers: { 
+        "Authorization": `Bearer ${serviceAccessToken}`,
+        "Accept": "application/json",
+        "Content-Type": "application/json; charset=utf-8"
+        },
+      queryParams: queryParams,
+    });
+
+  if (!response.ok && raiseError) {
+    const error = `API call to ${url} failed. ${response.status} - ${await response.text()}`;
+    throw new Error(error);
+  }
+
+  return { data: await response.json(), status: response.status };
 }
 
 // Get a participant access token for the specified participant
@@ -78,8 +85,14 @@ async function getParticipantAccessToken(serviceAccessToken, participantID, scop
       "token": serviceAccessToken,
   }
 
-  const response = await axios.post(tokenUrl, querystring.stringify(payload));
-  const data = response.data;
+  const response = await fetch(tokenUrl, { method: "POST", headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: querystring.stringify(payload) });
+
+  if (!response.ok) {
+    const error = `Get participant access token failed. ${response.status} - ${await response.text()}`;
+    throw new Error(error);
+  }
+
+  const data = await response.json();
   return data.access_token;
 }
 
