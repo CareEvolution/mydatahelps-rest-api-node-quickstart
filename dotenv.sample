@@ -1,4 +1,5 @@
 # Copy this file and name the new copy ".env" to get started
+# Change all example values to match your MyDataHelpsDesigner project
 
 # The Project GUID
 #
@@ -10,7 +11,7 @@ RKS_PROJECT_ID="361e1234-8c15-78ae-1234-3b70d33023d6"
 #
 # Found in MyDataHelpsDesigner via Settings -> Workspace Settings -> Service Accounts
 #
-RKS_SERVICE_ACCOUNT="MyDataHelps.1234ABCD.KeyName"
+RKS_SERVICE_ACCOUNT="MyDataHelps.1234ABCD.AccountName"
 
 # The private key of the Service Account
 #
