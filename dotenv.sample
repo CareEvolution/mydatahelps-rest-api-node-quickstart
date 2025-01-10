@@ -1,6 +1,21 @@
-RKS_PROJECT_ID=
+# Copy this file and name the new copy ".env" to get started
 
-RKS_SERVICE_ACCOUNT=
+# The Project GUID
+#
+# Found in MyDataHelpsDesigner via Projects -> About Settings -> Project ID
+#
+RKS_PROJECT_ID="361e1234-8c15-78ae-1234-3b70d33023d6"
 
+# The name of the Service Account 
+#
+# Found in MyDataHelpsDesigner via Settings -> Workspace Settings -> Service Accounts
+#
+RKS_SERVICE_ACCOUNT="MyDataHelps.1234ABCD.KeyName"
+
+# The private key of the Service Account
+#
+# Found in MyDataHelpsDesigner via Settings -> Workspace Settings -> Service Accounts
+# Be sure to include the begin/end tags
 # You can use \n to separate the lines in your private key
-RKS_PRIVATE_KEY=
+#
+RKS_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n230703de230703de230703de\nb62b0e24b62b0e24b62b0e24\n...\n-----END RSA PRIVATE KEY-----"
