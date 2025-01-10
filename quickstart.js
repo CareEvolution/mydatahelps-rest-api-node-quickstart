@@ -54,14 +54,15 @@ async function getServiceAccessToken() {
 
 async function getFromApi(serviceAccessToken, resourceUrl, queryParams = {}, raiseError = true) {
 
-  const url = `${baseUrl}${resourceUrl}`
+  const url = new URL(`${baseUrl}${resourceUrl}`);
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
+
   const response = await fetch(url, {
       headers: { 
         "Authorization": `Bearer ${serviceAccessToken}`,
         "Accept": "application/json",
         "Content-Type": "application/json; charset=utf-8"
-        },
-      queryParams: queryParams,
+        }
     });
 
   if (!response.ok && raiseError) {
@@ -104,6 +105,7 @@ function logResponse(response) {
 async function quickstart() {
   var url;
   var response;
+  var queryParams = {};
   
   // Get a service access token, needed for all API calls.
   const serviceAccessToken = await getServiceAccessToken();
@@ -112,7 +114,9 @@ async function quickstart() {
 
   // Get all participants
   url = `/api/v1/administration/projects/${rksProjectId}/participants`;
-  response = await getFromApi(serviceAccessToken, url);
+  // Return only 1 participant for this example
+  queryParams["pageSize"] = 1;  
+  response = await getFromApi(serviceAccessToken, url, queryParams);
   const participants = response.data;
   console.log(`\nTotal Participants: ${participants.totalParticipants}`);
 
