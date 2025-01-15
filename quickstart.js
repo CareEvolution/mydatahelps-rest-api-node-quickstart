@@ -52,11 +52,12 @@ async function getServiceAccessToken() {
 }
 
 
-async function getFromApi(serviceAccessToken, resourceUrl, queryParams = {}, raiseError = true) {
+async function getFromApi(serviceAccessToken, resourceUrl, queryParams = null, raiseError = true) {
 
-  const url = new URL(`${baseUrl}${resourceUrl}`);
-  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
-
+  const queryString = queryParams ? `?${new URLSearchParams(queryParams)}` : '';
+  const url = `${baseUrl}${resourceUrl}${queryString}`;
+  console.log(url);
+  
   const response = await fetch(url, {
       headers: { 
         "Authorization": `Bearer ${serviceAccessToken}`,
@@ -114,9 +115,7 @@ async function quickstart() {
 
   // Get all participants
   url = `/api/v1/administration/projects/${rksProjectId}/participants`;
-  // Return only 1 participant for this example
-  queryParams["pageSize"] = 1;  
-  response = await getFromApi(serviceAccessToken, url, queryParams);
+  response = await getFromApi(serviceAccessToken, url);
   const participants = response.data;
   console.log(`\nTotal Participants: ${participants.totalParticipants}`);
 
@@ -126,7 +125,7 @@ async function quickstart() {
   
   if (participantIdentifier != "YOUR_PARTICIPANT_IDENTIFIER") {
     url = `/api/v1/administration/projects/${rksProjectId}/participants/${participantIdentifier}`;
-    response = await getFromApi(serviceAccessToken, url, {}, false );
+    response = await getFromApi(serviceAccessToken, url, null, false );
     if (response.status === 404) {
       console.log("\nParticipant not found.");
     } else {
