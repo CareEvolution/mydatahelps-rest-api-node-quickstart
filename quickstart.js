@@ -105,7 +105,6 @@ function logResponse(response) {
 async function quickstart() {
   var url;
   var response;
-  var queryParams = {};
   
   // Get a service access token, needed for all API calls.
   const serviceAccessToken = await getServiceAccessToken();
