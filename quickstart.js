@@ -56,7 +56,6 @@ async function getFromApi(serviceAccessToken, resourceUrl, queryParams = null, r
 
   const queryString = queryParams ? `?${new URLSearchParams(queryParams)}` : '';
   const url = `${baseUrl}${resourceUrl}${queryString}`;
-  console.log(url);
   
   const response = await fetch(url, {
       headers: { 
