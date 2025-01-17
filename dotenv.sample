@@ -1,3 +1,5 @@
+# See README.md for instructions on setting up the .env file
+#
 RKS_PROJECT_ID=
 
 RKS_SERVICE_ACCOUNT=

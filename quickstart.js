@@ -52,16 +52,17 @@ async function getServiceAccessToken() {
 }
 
 
-async function getFromApi(serviceAccessToken, resourceUrl, queryParams = {}, raiseError = true) {
+async function getFromApi(serviceAccessToken, resourceUrl, queryParams = null, raiseError = true) {
 
-  const url = `${baseUrl}${resourceUrl}`
+  const queryString = queryParams ? `?${new URLSearchParams(queryParams)}` : '';
+  const url = `${baseUrl}${resourceUrl}${queryString}`;
+  
   const response = await fetch(url, {
       headers: { 
         "Authorization": `Bearer ${serviceAccessToken}`,
         "Accept": "application/json",
         "Content-Type": "application/json; charset=utf-8"
-        },
-      queryParams: queryParams,
+        }
     });
 
   if (!response.ok && raiseError) {
@@ -122,7 +123,7 @@ async function quickstart() {
   
   if (participantIdentifier != "YOUR_PARTICIPANT_IDENTIFIER") {
     url = `/api/v1/administration/projects/${rksProjectId}/participants/${participantIdentifier}`;
-    response = await getFromApi(serviceAccessToken, url, {}, false );
+    response = await getFromApi(serviceAccessToken, url, null, false );
     if (response.status === 404) {
       console.log("\nParticipant not found.");
     } else {
