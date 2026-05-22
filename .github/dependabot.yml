@@ -8,4 +8,4 @@ updates:
       semver-patch-days: 3
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
