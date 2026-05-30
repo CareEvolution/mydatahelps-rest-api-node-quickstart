@@ -7,18 +7,18 @@ const { v4: uuidv4 } = require('uuid');
 
 // **NOTE!** In a real production app you would want these to be sourced from real environment variables. The .env file is just
 // a convenience for development.
-const rksProjectId = process.env.RKS_PROJECT_ID;
-const rksServiceAccount = process.env.RKS_SERVICE_ACCOUNT;
+const mdhProjectId = process.env.RKS_PROJECT_ID;
+const mdhServiceAccount = process.env.RKS_SERVICE_ACCOUNT;
 const privateKey = process.env.RKS_PRIVATE_KEY;
 
-const baseUrl = 'https://designer.mydatahelps.org';
+const baseUrl = "https://designer.mydatahelps.org";
 const tokenUrl = `${baseUrl}/identityserver/connect/token`;
 
 async function getServiceAccessToken() {
 
   const assertion = {
-    "iss": rksServiceAccount,
-    "sub": rksServiceAccount,
+    "iss": mdhServiceAccount,
+    "sub": mdhServiceAccount,
     "aud": tokenUrl,
     "exp": Math.floor(new Date().getTime() / 1000) + 200,
     "jti": uuidv4()
@@ -73,6 +73,29 @@ async function getFromApi(serviceAccessToken, resourceUrl, queryParams = null, r
   return { data: await response.json(), status: response.status };
 }
 
+async function postToApi(serviceAccessToken, resourceUrl, queryParams = null, body = null, raiseError = true) {
+
+  const queryString = queryParams ? `?${new URLSearchParams(queryParams)}` : '';
+  const url = `${baseUrl}${resourceUrl}${queryString}`;
+  
+  const response = await fetch(url, {
+      headers: { 
+        "Authorization": `Bearer ${serviceAccessToken}`,
+        "Accept": "application/json",
+        "Content-Type": "application/json; charset=utf-8"
+        },
+      method: 'POST',
+      body: JSON.stringify(body)
+    });
+
+  if (!response.ok && raiseError) {
+    const error = `API call to ${url} failed. ${response.status} - ${await response.text()}`;
+    throw new Error(error);
+  }
+
+  return { data: await response.json(), status: response.status };
+}
+
 // Get a participant access token for the specified participant
 // Used for MyDataHelps Embeddables ONLY
 async function getParticipantAccessToken(serviceAccessToken, participantID, scopes) {
@@ -112,17 +135,17 @@ async function quickstart() {
   console.log(serviceAccessToken);
 
   // Get all participants
-  url = `/api/v1/administration/projects/${rksProjectId}/participants`;
+  url = `/api/v1/administration/projects/${mdhProjectId}/participants`;
   response = await getFromApi(serviceAccessToken, url);
   const participants = response.data;
   console.log(`\nTotal Participants: ${participants.totalParticipants}`);
-
+  console.log(participants["participants"][0]);
   // Get a specific participant by identifier. We disable 'raiseError' here
   // so we can handle the 404 case ourselves.
   const participantIdentifier = "YOUR_PARTICIPANT_IDENTIFIER"
   
   if (participantIdentifier != "YOUR_PARTICIPANT_IDENTIFIER") {
-    url = `/api/v1/administration/projects/${rksProjectId}/participants/${participantIdentifier}`;
+    url = `/api/v1/administration/projects/${mdhProjectId}/participants/${participantIdentifier}`;
     response = await getFromApi(serviceAccessToken, url, null, false );
     if (response.status === 404) {
       console.log("\nParticipant not found.");
@@ -135,7 +158,7 @@ async function quickstart() {
       // Be sure to:
       // 1. Use the internal ID field (from participant.id above) and NOT participantIdentifier
       // 2. Request the correct scope(s) for your needs.
-      const scopes = "Participant:read SurveyAnswers:read"
+      const scopes = "Participant:read SurveyAnswers:read api"
       const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
       console.log(`\nObtained participant access token for ${participant.id}: ${participantAccessToken}`);
     }
