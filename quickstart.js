@@ -11,7 +11,7 @@ const mdhProjectId = process.env.RKS_PROJECT_ID;
 const mdhServiceAccount = process.env.RKS_SERVICE_ACCOUNT;
 const privateKey = process.env.RKS_PRIVATE_KEY;
 
-const baseUrl = "https://designer.mydatahelps.org";
+const baseUrl = process.env.RKS_ENDPOINT || "https://designer.mydatahelps.org";
 const tokenUrl = `${baseUrl}/identityserver/connect/token`;
 
 async function getServiceAccessToken() {
@@ -145,9 +145,8 @@ async function quickstart() {
     return;
   }
   
-  // Print first PPT for debugging
+  // Get first PPT for debugging
   const firstParticipant = participants["participants"][0];
-  console.log(firstParticipant);
     
   // Get a specific participant by identifier. We disable 'raiseError' here
   // so we can handle the 404 case ourselves.
@@ -160,13 +159,14 @@ async function quickstart() {
   } else {
     const participant = response.data;
     console.log(`\nParticipant Found. ID: ${participant.id}`);
+    console.log(participant);
 
     // NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
     // Most API use cases do NOT require a participant token.
     // Be sure to:
     // 1. Use the internal ID field (from participant.id above) and NOT participantIdentifier
     // 2. Request the correct scope(s) for your needs.
-    const scopes = "Participant:read SurveyAnswers:read api"
+    const scopes = "Participant:read SurveyTasks:read SurveyAnswers:read Notifications:read DataCollectionSettings:read ExternalAccounts:connect ExternalAccounts:read  Project:read";
     const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
     console.log(`\nObtained participant access token for ${participant.id}: ${participantAccessToken}`);
   }
