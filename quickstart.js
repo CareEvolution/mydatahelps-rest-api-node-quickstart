@@ -139,29 +139,36 @@ async function quickstart() {
   response = await getFromApi(serviceAccessToken, url);
   const participants = response.data;
   console.log(`\nTotal Participants: ${participants.totalParticipants}`);
-  console.log(participants["participants"][0]);
+  
+  // Exit now if no participants found.
+  if (!participants["participants"]) {
+    return;
+  }
+  
+  // Print first PPT for debugging
+  const firstParticipant = participants["participants"][0];
+  console.log(firstParticipant);
+    
   // Get a specific participant by identifier. We disable 'raiseError' here
   // so we can handle the 404 case ourselves.
-  const participantIdentifier = "YOUR_PARTICIPANT_IDENTIFIER"
+  const participantIdentifier = firstParticipant["participantIdentifier"];
   
-  if (participantIdentifier != "YOUR_PARTICIPANT_IDENTIFIER") {
-    url = `/api/v1/administration/projects/${mdhProjectId}/participants/${participantIdentifier}`;
-    response = await getFromApi(serviceAccessToken, url, null, false );
-    if (response.status === 404) {
-      console.log("\nParticipant not found.");
-    } else {
-      const participant = response.data;
-      console.log(`\nParticipant Found. ID: ${participant.id}`);
+  url = `/api/v1/administration/projects/${mdhProjectId}/participants/${participantIdentifier}`;
+  response = await getFromApi(serviceAccessToken, url, null, false );
+  if (response.status === 404) {
+    console.log("\nParticipant not found.");
+  } else {
+    const participant = response.data;
+    console.log(`\nParticipant Found. ID: ${participant.id}`);
 
-      // NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
-      // Most API use cases do NOT require a participant token.
-      // Be sure to:
-      // 1. Use the internal ID field (from participant.id above) and NOT participantIdentifier
-      // 2. Request the correct scope(s) for your needs.
-      const scopes = "Participant:read SurveyAnswers:read api"
-      const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
-      console.log(`\nObtained participant access token for ${participant.id}: ${participantAccessToken}`);
-    }
+    // NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
+    // Most API use cases do NOT require a participant token.
+    // Be sure to:
+    // 1. Use the internal ID field (from participant.id above) and NOT participantIdentifier
+    // 2. Request the correct scope(s) for your needs.
+    const scopes = "Participant:read SurveyAnswers:read api"
+    const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
+    console.log(`\nObtained participant access token for ${participant.id}: ${participantAccessToken}`);
   }
 }
 
