@@ -165,7 +165,7 @@ async function quickstart() {
     // Most API use cases do NOT require a participant token.
     // Be sure to:
     // 1. Use the internal ID field (from participant.id above) and NOT participantIdentifier
-    // 2. Request the correct scope(s) for your needs.
+    // 2. Request the correct scope(s) for your needs. The default ones here mirror the MyDataHelpsStarterKit needs.
     const scopes = "Participant:read SurveyTasks:read SurveyAnswers:read Notifications:read DataCollectionSettings:read ExternalAccounts:connect ExternalAccounts:read  Project:read";
     const participantAccessToken = await getParticipantAccessToken(serviceAccessToken, participant.id, scopes);
     console.log(`\nObtained participant access token for ${participant.id}: ${participantAccessToken}`);
