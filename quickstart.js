@@ -11,7 +11,7 @@ const mdhProjectId = process.env.RKS_PROJECT_ID;
 const mdhServiceAccount = process.env.RKS_SERVICE_ACCOUNT;
 const privateKey = process.env.RKS_PRIVATE_KEY;
 
-const baseUrl = process.env.RKS_ENDPOINT || "https://designer.mydatahelps.org";
+const baseUrl = process.env.RKS_BASE_URL || "https://designer.mydatahelps.org";
 const tokenUrl = `${baseUrl}/identityserver/connect/token`;
 
 async function getServiceAccessToken() {
